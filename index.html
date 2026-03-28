@@ -651,9 +651,9 @@
             <p class="muted">montant cumule</p>
           </article>
           <article class="stat-card">
-            <div class="section-kicker">En attente</div>
+            <div class="section-kicker">En cours</div>
             <strong id="stat-pending">0</strong>
-            <p class="muted">paiement / preparation</p>
+            <p class="muted">hors boite / annulee</p>
           </article>
           <article class="stat-card">
             <div class="section-kicker">Clients</div>
@@ -673,12 +673,11 @@
               <span>Statut</span>
               <select id="status-filter">
                 <option value="all">Tous</option>
-                <option value="pending_payment">Paiement en attente</option>
-                <option value="paid">Paye</option>
-                <option value="preparing">Preparation</option>
-                <option value="shipped">Expedie</option>
-                <option value="done">Termine</option>
-                <option value="canceled">Annule</option>
+                <option value="pending_payment">Commande recue</option>
+                <option value="paid">Paiement recu</option>
+                <option value="shipped">Livraison en cours</option>
+                <option value="done">Dans la boite</option>
+                <option value="canceled">Annulee</option>
               </select>
             </label>
 
@@ -714,12 +713,11 @@
       };
 
       const STATUS_LABELS = {
-        pending_payment: "Paiement en attente",
-        paid: "Paye",
-        preparing: "Preparation",
-        shipped: "Expedie",
-        done: "Termine",
-        canceled: "Annule",
+        pending_payment: "Commande recue",
+        paid: "Paiement recu",
+        shipped: "Livraison en cours",
+        done: "Dans la boite",
+        canceled: "Annulee",
       };
 
       let firebaseAuth = null;
@@ -846,6 +844,9 @@
 
       function normalizeStatus(status) {
         const key = String(status || "pending_payment");
+        if (key === "preparing") {
+          return "paid";
+        }
         return STATUS_LABELS[key] ? key : "pending_payment";
       }
 
@@ -938,7 +939,7 @@
         const revenue = list.reduce((sum, order) => sum + (Number(order.amount) || 0), 0);
         const pending = list.filter((order) => {
           const status = normalizeStatus(order.status);
-          return status === "pending_payment" || status === "preparing";
+          return status !== "done" && status !== "canceled";
         }).length;
         const customers = new Set(
           list.map((order) => order.userId || order.userEmail || order.id).filter(Boolean)
@@ -1071,12 +1072,11 @@
                   <label class="field status-select">
                     <span>Changer le statut</span>
                     <select data-order-status="${escapeHtml(order.id)}">
-                      <option value="pending_payment" ${status === "pending_payment" ? "selected" : ""}>Paiement en attente</option>
-                      <option value="paid" ${status === "paid" ? "selected" : ""}>Paye</option>
-                      <option value="preparing" ${status === "preparing" ? "selected" : ""}>Preparation</option>
-                      <option value="shipped" ${status === "shipped" ? "selected" : ""}>Expedie</option>
-                      <option value="done" ${status === "done" ? "selected" : ""}>Termine</option>
-                      <option value="canceled" ${status === "canceled" ? "selected" : ""}>Annule</option>
+                      <option value="pending_payment" ${status === "pending_payment" ? "selected" : ""}>Commande recue</option>
+                      <option value="paid" ${status === "paid" ? "selected" : ""}>Paiement recu</option>
+                      <option value="shipped" ${status === "shipped" ? "selected" : ""}>Livraison en cours</option>
+                      <option value="done" ${status === "done" ? "selected" : ""}>Dans la boite</option>
+                      <option value="canceled" ${status === "canceled" ? "selected" : ""}>Annulee</option>
                     </select>
                   </label>
                 </div>
