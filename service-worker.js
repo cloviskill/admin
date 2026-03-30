@@ -24,7 +24,7 @@ const SHOP_ASSETS = [
 const CORE_ASSETS = [
   "./",
   "./index.html",
-  "./index2.html",
+  "./index.html",
   "./manifest.webmanifest",
   "./manifest-admin.webmanifest",
   "./service-worker.js",
@@ -106,11 +106,11 @@ self.addEventListener("fetch", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const targetUrl = event.notification?.data?.url || "./index2.html";
+  const targetUrl = event.notification?.data?.url || "./index.html";
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientsList) => {
-      const existingClient = clientsList.find((client) => client.url.includes("index2.html"));
+      const existingClient = clientsList.find((client) => client.url.includes("index.html"));
       if (existingClient) {
         return existingClient.focus();
       }
