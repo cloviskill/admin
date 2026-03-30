@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Kultiv Admin</title>
     <meta name="theme-color" content="#10151b" />
+    <meta name="application-name" content="Kultiv Admin" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Kultiv Admin" />
-    <link rel="manifest" href="manifest-admin.webmanifest?v=20260330-admin-3" />
+    <link rel="manifest" href="manifest-admin.webmanifest?v=20260330-admin-4" />
+    <link rel="icon" href="admin-icon-192.png" sizes="192x192" />
     <link rel="apple-touch-icon" href="admin-icon-192.png" />
     <style>
       :root {
@@ -939,19 +941,13 @@
         updateInstallUi();
         updateNotificationUi();
 
-        if (!window.isSecureContext) {
+        if (window.location.protocol === "file:" || !("serviceWorker" in navigator)) {
           setSystemMessage("Installation et notifications reelles demandent un site ouvert en https ou localhost.");
           return;
         }
 
-        if (!("serviceWorker" in navigator)) {
-          return;
-        }
-
         try {
-          serviceWorkerRegistration = await navigator.serviceWorker.register("./service-worker-admin.js?v=20260330-admin-3", {
-            scope: "./index2.html",
-          });
+          serviceWorkerRegistration = await navigator.serviceWorker.register("./service-worker.js");
           serviceWorkerRegistration = await navigator.serviceWorker.ready;
           updateInstallUi();
         } catch (error) {
